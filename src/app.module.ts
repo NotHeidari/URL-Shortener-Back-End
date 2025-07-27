@@ -3,10 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './utils/database.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ShortUrl } from './entities/short-url.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule.forFeature([ShortUrl]),
   ],
   controllers: [AppController],
   providers: [AppService],
