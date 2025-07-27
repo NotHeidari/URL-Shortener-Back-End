@@ -13,11 +13,12 @@ export class AppController {
       type: 'object',
       properties: {
         url: { type: 'string', example: 'https://example.com' },
+        short_code: { type: 'string', example: 'custom123', nullable: true },
         expires_at: { type: 'string', format: 'date-time', example: '2025-12-31T23:59:59Z', nullable: true },
       },
       required: ['url'],
     },
-    description: 'URL to shorten and optional expiration date',
+    description: 'URL to shorten, optional custom short_code, and optional expiration date',
   })
   @ApiResponse({ status: 201, description: 'Shortened URL', schema: {
     type: 'object',
@@ -26,8 +27,12 @@ export class AppController {
       url: { type: 'string', example: 'https://example.com' },
     }
   }})
-  async shortenUrl(@Body('url') url: string, @Body('expires_at') expires_at?: Date) {
-    return this.appService.shortenUrl(url, expires_at);
+  async shortenUrl(
+    @Body('url') url: string,
+    @Body('short_code') short_code?: string,
+    @Body('expires_at') expires_at?: Date
+  ) {
+    return this.appService.shortenUrl(url, expires_at, short_code);
   }
 
   @Get(':alias')
