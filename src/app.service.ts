@@ -32,12 +32,19 @@ export class AppService {
     }
     // جلوگیری از حملات XSS
     const sanitizedUrl = url.replace(/[<>"'`]/g, '');
-    // اعتبارسنجی تاریخ انقضا (در گذشته نباشد)
+    // اعتبارسنجی تاریخ انقضا (در گذشته نباشد و حداکثر 1 سال از الان)
     if (expires_at) {
       const date = new Date(expires_at);
-      if (isNaN(date.getTime()) || date < new Date()) {
+      const now = new Date();
+      const max = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 سال
+      if (isNaN(date.getTime()) || date < now) {
         throw new BadRequestException(
           'Expiration date is invalid or in the past',
+        );
+      }
+      if (date > max) {
+        throw new BadRequestException(
+          'Expiration date cannot be more than 1 year from now',
         );
       }
     }
