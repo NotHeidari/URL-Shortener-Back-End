@@ -1,9 +1,9 @@
 {
-  "name": "Back",
+  "name": "URL Shortener Back",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
+  "description": "Backend for a URL shortening service.",
+  "author": "NotHeidari.ir",
+  "private": false,
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
