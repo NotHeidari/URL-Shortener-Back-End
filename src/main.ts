@@ -15,6 +15,10 @@ async function bootstrap() {
   // Swagger setup
   await setupSwagger(app);
 
-  await app.listen(process.env.PORT ?? 3000);
+  const PORT = process.env.PORT ?? 3000;
+  await app.listen(PORT).then(() => {
+    console.log(`Srever Is Running On Port ${PORT}`);
+    console.log(`Swagger http://localhost:${PORT}/api-docs`);
+  });
 }
 bootstrap();
