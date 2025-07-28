@@ -33,19 +33,18 @@ export class AppService {
     // جلوگیری از حملات XSS
     const sanitizedUrl = url.replace(/[<>"'`]/g, '');
     // اعتبارسنجی تاریخ انقضا (در گذشته نباشد و حداکثر 1 سال از الان)
+    let expiresDate: Date | null = null;
     if (expires_at) {
-      const date = new Date(expires_at);
+      expiresDate = new Date(expires_at);
+      // ساعت را همیشه 23:59:59 تنظیم کن
+      expiresDate.setHours(23, 59, 59, 0);
       const now = new Date();
       const max = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 سال
-      if (isNaN(date.getTime()) || date < now) {
-        throw new BadRequestException(
-          'Expiration date is invalid or in the past',
-        );
+      if (isNaN(expiresDate.getTime()) || expiresDate < now) {
+        throw new BadRequestException('Expiration date is invalid or in the past');
       }
-      if (date > max) {
-        throw new BadRequestException(
-          'Expiration date cannot be more than 1 year from now',
-        );
+      if (expiresDate > max) {
+        throw new BadRequestException('Expiration date cannot be more than 1 year from now');
       }
     }
     // استفاده از short_code دلخواه یا تولید تصادفی
@@ -60,7 +59,7 @@ export class AppService {
     const entity = this.shortUrlRepo.create({
       short_code: code,
       original_url: sanitizedUrl,
-      expires_at: expires_at ? new Date(expires_at) : null,
+      expires_at: expiresDate,
     });
     await this.shortUrlRepo.save(entity);
     return { alias: code, url: sanitizedUrl };
