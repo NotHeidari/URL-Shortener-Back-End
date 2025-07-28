@@ -73,4 +73,15 @@ export class AppService {
     if (!entity) throw new NotFoundException('Alias not found');
     return { alias, url: entity.original_url };
   }
+  // حذف رکوردهای منقضی‌شده از دیتابیس
+  async cleanupExpiredUrls(): Promise<number> {
+    const now = new Date();
+    const result = await this.shortUrlRepo
+      .createQueryBuilder()
+      .delete()
+      .from(ShortUrl)
+      .where('expires_at IS NOT NULL AND expires_at < :now', { now: now.toISOString() })
+      .execute();
+    return result.affected || 0;
+  }
 }
