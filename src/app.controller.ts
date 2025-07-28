@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import { ShortenUrlDto } from './dto/shorten-url.dto';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 
@@ -27,12 +28,8 @@ export class AppController {
       url: { type: 'string', example: 'https://example.com' },
     }
   }})
-  async shortenUrl(
-    @Body('url') url: string,
-    @Body('short_code') short_code?: string,
-    @Body('expires_at') expires_at?: Date
-  ) {
-    return this.appService.shortenUrl(url, expires_at, short_code);
+  async shortenUrl(@Body() body: ShortenUrlDto) {
+    return this.appService.shortenUrl(body);
   }
 
   @Get(':alias')
