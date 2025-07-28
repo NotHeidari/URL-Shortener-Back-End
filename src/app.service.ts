@@ -34,18 +34,23 @@ export class AppService {
     const sanitizedUrl = url.replace(/[<>"'`]/g, '');
     // اعتبارسنجی تاریخ انقضا (در گذشته نباشد و حداکثر 1 سال از الان)
     let expiresDate: Date | null = null;
+    const now = new Date();
     if (expires_at) {
       expiresDate = new Date(expires_at);
       // ساعت را همیشه 23:59:59 تنظیم کن
       expiresDate.setHours(23, 59, 59, 0);
-      const now = new Date();
-      const max = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 سال
-      if (isNaN(expiresDate.getTime()) || expiresDate < now) {
-        throw new BadRequestException('Expiration date is invalid or in the past');
-      }
-      if (expiresDate > max) {
-        throw new BadRequestException('Expiration date cannot be more than 1 year from now');
-      }
+    } else {
+      // پیش‌فرض: انتهای روز یک ماه بعد
+      expiresDate = new Date(now);
+      expiresDate.setMonth(expiresDate.getMonth() + 1);
+      expiresDate.setHours(23, 59, 59, 0);
+    }
+    const max = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 سال
+    if (isNaN(expiresDate.getTime()) || expiresDate < now) {
+      throw new BadRequestException('Expiration date is invalid or in the past');
+    }
+    if (expiresDate > max) {
+      throw new BadRequestException('Expiration date cannot be more than 1 year from now');
     }
     // استفاده از short_code دلخواه یا تولید تصادفی
     const code = short_code || Math.random().toString(36).substring(2, 8);
